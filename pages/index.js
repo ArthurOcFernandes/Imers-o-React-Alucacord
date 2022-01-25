@@ -1,34 +1,9 @@
 import appConfig from '../config.json';
+import React, { useEffect } from 'react';
+import { useRouter } from 'next/router';
 import { Box, Button, Text, TextField, Image } from '@skynexui/components';
 
-function GlobalStyle() {
-  return (
-    <style global jsx>{`
-        * {
-          margin: 0;
-          padding: 0;
-          box-sizing: border-box;
-          list-style: none;
-        }
-        body {
-          font-family: 'Open Sans', sans-serif;
-        }
-        /* App fit Height */ 
-        html, body, #__next {
-          min-height: 100vh;
-          display: flex;
-          flex: 1;
-        }
-        #__next {
-          flex: 1;
-        }
-        #__next > * {
-          flex: 1;
-        }
-        /* ./App fit Height */ 
-      `}</style>
-  );
-}
+
 
 function Titulo(props) {
   const Tag = props.tag || 'h1';
@@ -64,17 +39,32 @@ function Titulo(props) {
 /* export default HomePage */
 
 export default function PaginaInicial() {
-  const username = 'arthurOcFernandes';
+  // const username = 'arthurOcFernandes';
+  const [username, setUsername] = React.useState('');
+  const [location, setLocation] = React.useState('');
+  const [realName, setRealName] = React.useState('')
+  const [company, setCompany] = React.useState('');
+
+  useEffect(() => {
+    fetch(`https://api.github.com/users/${username}`).
+      then((response) => response.json()).
+      then((data) => {
+        setLocation(data.location == null ? "" : data.location),
+          setCompany(data.company == null ? "" : data.company),
+          setRealName(data.name == null ? username : data.name)
+      })
+  }, [username])
+
+  const roteamento = useRouter();
 
   return (
     <>
-      <GlobalStyle />
       <Box
         styleSheet={{
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           backgroundColor: appConfig.theme.colors.primary[500],
           backgroundImage: 'url(https://images7.alphacoders.com/493/thumb-1920-493639.jpg)',
-          backgroundRepeat: 'no-repeat', backgroundSize: '100%', backgroundBlendMode: 'luminosity',
+          backgroundRepeat: 'no-repeat', backgroundSize: 'cover', backgroundBlendMode: 'luminosity',
         }}
       >
         <Box
@@ -95,6 +85,11 @@ export default function PaginaInicial() {
           {/* Formulário */}
           <Box
             as="form"
+            onSubmit={(evento) => {
+              evento.preventDefault();
+              roteamento.push('/chat')
+              // window.location.href = '/chat';
+            }}
             styleSheet={{
               display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
               width: { xs: '100%', sm: '50%' }, textAlign: 'center', marginBottom: '32px',
@@ -105,7 +100,22 @@ export default function PaginaInicial() {
               {appConfig.name}
             </Text>
 
+            {/* <input 
+              value={username}
+              onChange={function (evento){
+                //Pega o valor da alteração
+                const valor = evento.target.value;
+                //Altera usando o React
+                setUsername(valor);
+              }}    
+            /> */}
             <TextField
+              value={username}
+              onChange={(evento) => {
+                const valor = evento.target.value;
+                setUsername(valor);
+              }
+              }
               fullWidth
               textFieldColors={{
                 neutral: {
@@ -152,7 +162,9 @@ export default function PaginaInicial() {
                 borderRadius: '50%',
                 marginBottom: '16px',
               }}
-              src={`https://github.com/${username}.png`}
+
+
+              src={username.length >= 2 ? `https://github.com/${username}.png` : `https://github.githubassets.com/images/modules/logos_page/Octocat.png`}
             />
             <Text
               variant="body4"
@@ -163,7 +175,29 @@ export default function PaginaInicial() {
                 borderRadius: '1000px'
               }}
             >
-              {username}
+              {realName}
+            </Text>
+            <Text
+              variant="body4"
+              styleSheet={{
+                color: appConfig.theme.colors.neutrals[200],
+                backgroundColor: appConfig.theme.colors.neutrals[900],
+                padding: '3px 10px',
+                borderRadius: '1000px'
+              }}
+            >
+              {company}
+            </Text>
+            <Text
+              variant="body4"
+              styleSheet={{
+                color: appConfig.theme.colors.neutrals[200],
+                backgroundColor: appConfig.theme.colors.neutrals[900],
+                padding: '3px 10px',
+                borderRadius: '1000px',
+              }}
+            >
+              {location}
             </Text>
           </Box>
           {/* Photo Area */}
