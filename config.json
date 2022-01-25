@@ -1,5 +1,5 @@
 {
-    "name": "Aluracord - Matrix (ArthurOcFernandes)",
+    "name": "SoulsCord (ArthurOcFernandes)",
     "theme": {
         "colors": {
             "primary": {
@@ -8,8 +8,8 @@
                 "200": "#A3D9A5",
                 "300": "#7BC47F",
                 "400": "#57AE5B",
-                "500": "#8f5513",
-                "600": "#e58a21",
+                "500": "#e58a21",
+                "600": "#ed9126",
                 "700": "#207227",
                 "800": "#0E5814",
                 "900": "#05400A"
