@@ -62,7 +62,7 @@ export default function PaginaInicial() {
       <Box
         styleSheet={{
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          backgroundColor: appConfig.theme.colors.primary[500],
+          backgroundColor: appConfig.theme.colors.primary['600'],
           backgroundImage: 'url(https://images7.alphacoders.com/493/thumb-1920-493639.jpg)',
           backgroundRepeat: 'no-repeat', backgroundSize: 'cover', backgroundBlendMode: 'luminosity',
         }}
@@ -87,7 +87,7 @@ export default function PaginaInicial() {
             as="form"
             onSubmit={(evento) => {
               evento.preventDefault();
-              roteamento.push('/chat')
+              roteamento.push(`/chat?username=${username}`);
               // window.location.href = '/chat';
             }}
             styleSheet={{

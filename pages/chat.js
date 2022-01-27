@@ -1,22 +1,49 @@
 import { Box, Text, TextField, Image, Button } from '@skynexui/components';
 import React from 'react';
 import appConfig from '../config.json';
+import { createClient } from '@supabase/supabase-js'
+import { useRouter } from 'next/router';
+
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzI5ODg0OSwiZXhwIjoxOTU4ODc0ODQ5fQ.0iX6o7hXQAC7OE2XtUxR8wMPlK1rS0Iq8xE-fp10HMc"
+const SUPABASE_URL = 'https://zmbkpbwqpxjwtzylcwxj.supabase.co';
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 export default function ChatPage() {
-    // Sua lógica vai aqui
+    
+    const router = useRouter();
+    const {username} = router.query;
+    console.log(username);
     const [mensagem, setMensagem] = React.useState("");
     const [listaMensagens, setListaMensagens] = React.useState([]);
+    React.useEffect(() => {
+        supabaseClient
+            .from('mensagens')
+            .select('*')
+            .order('id', { ascending: false })
+            .then(({ data }) => {
+                console.log('Dados consulta:', data);
+                setListaMensagens(data);
+            });
+
+    }, [])
 
     const handleNovaMensagem = (novaMensagem) => {
         const mensagem = {
-            id: listaMensagens.length,
-            de: 'arthurocfernandes',
+            de: username,
             texto: novaMensagem,
         };
-        setListaMensagens([
-            mensagem,
-            ...listaMensagens,
-        ]);
+
+        supabaseClient
+            .from('mensagens')
+            .insert([
+                mensagem
+            ]).then(({ data }) => {
+                setListaMensagens([
+                    data[0],
+                    ...listaMensagens,
+                ]);
+            });
+
         setMensagem("");
     }
 
@@ -38,12 +65,12 @@ export default function ChatPage() {
                     flex: 1,
                     boxShadow: '0 2px 10px 0 rgb(0 0 0 / 20%)',
                     borderRadius: '5px',
-                    backgroundColor: appConfig.theme.colors.neutrals['750'],
+                    backgroundColor: appConfig.theme.colors.neutrals['025'],
                     height: '100%',
                     maxWidth: '95%',
                     maxHeight: '95vh',
                     padding: '32px',
-                    border: `1px solid ${appConfig.theme.colors.primary['550']}`
+                    border: '1px solid #FFFFFF70'
                 }}
             >
                 <Header />
@@ -53,7 +80,7 @@ export default function ChatPage() {
                         display: 'flex',
                         flex: 1,
                         height: '80%',
-                        backgroundColor: appConfig.theme.colors.neutrals[600],
+                        backgroundColor: appConfig.theme.colors.neutrals['030'],
                         flexDirection: 'column',
                         borderRadius: '5px',
                         padding: '16px',
@@ -95,8 +122,8 @@ export default function ChatPage() {
                                 resize: 'none',
                                 borderRadius: '5px',
                                 padding: '6px 8px',
-                                backgroundColor: appConfig.theme.colors.neutrals[800],
-                                color: appConfig.theme.colors.neutrals[200],
+                                backgroundColor: appConfig.theme.colors.neutrals['025'],
+                                color: appConfig.theme.colors.neutrals['000'],
                             }}
                         />
                         <Button
@@ -110,9 +137,17 @@ export default function ChatPage() {
                             size='xl'
                             variant='secondary'
                             styleSheet={{
+                                border: `2px solid`,
+                                borderColor: appConfig.theme.colors.primary['500'],
+                                backgroundColor: appConfig.theme.colors.neutrals['025'],
                                 width: '10%',
-                                height: '90%'
+                                height: '90%',
+                                "hover":{
+                                    backgroundColor:appConfig.theme.colors.primary['500']
+                                }
+                                
                             }}
+                            
                         >
 
                         </Button>
@@ -123,12 +158,13 @@ export default function ChatPage() {
     )
 }
 
+
 function Header() {
     return (
         <>
             <Box styleSheet={{ width: '100%', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }} >
                 <Text variant='heading5'>
-                    Chat
+                    Chat - Soulscord
                 </Text>
                 <Button
                     variant='tertiary'
@@ -143,12 +179,12 @@ function Header() {
 
 function MessageList(props) {
 
-    const deletar = (mensagem) =>{
+    const deletar = (mensagem) => {
         const lista = props.mensagens;
         const set = props.set;
 
-        const msgSelecionada = (msg) =>{
-            if(msg.id != mensagem)
+        const msgSelecionada = (msg) => {
+            if (msg.id != mensagem)
                 return msg
         }
 
@@ -159,12 +195,11 @@ function MessageList(props) {
         ])
 
     }
-
     return (
         <Box
             tag="ul"
             styleSheet={{
-                overflow: 'scroll',
+                overflow: 'auto',
                 display: 'flex',
                 flexDirection: 'column-reverse',
                 flex: 1,
@@ -172,10 +207,11 @@ function MessageList(props) {
                 marginBottom: '16px',
             }}
         >
+            
             {props.mensagens.map((mensagem) => {
                 return (
                     <Text
-                        key={mensagem.id * Number((mensagem.texto).charCodeAt(0)) * (Math.random() * 10 +(1 * (Math.random() * 10)))}
+                        key={mensagem.id * Number((mensagem.texto).charCodeAt(0)) * (Math.random() * 10 + (1 * (Math.random() * 10)))}
                         tag="li"
                         styleSheet={{
                             borderRadius: '5px',
@@ -189,7 +225,9 @@ function MessageList(props) {
                         <Box
                             styleSheet={{
                                 marginBottom: '8px',
-                                position: 'relative'
+                                position: 'relative',
+                                display: 'flex',
+                                alignItems: 'center'
                             }}
 
                         >
@@ -217,9 +255,16 @@ function MessageList(props) {
                                 {(new Date().toLocaleDateString())}
                             </Text>
                             <Button
-                                onClick={()=>{
+                                onClick={() => {
                                     deletar(mensagem.id);
-                                    console.log(props.mensagens);
+
+                                    supabaseClient
+                                        .from('mensagens')
+                                        .delete().match(mensagem)
+                                        .then((msg) => {
+                                            console.log(msg);
+                                        })
+
                                 }}
 
                                 label='X'
@@ -228,7 +273,11 @@ function MessageList(props) {
                                 variant='tertiary'
                                 styleSheet={{
                                     position: 'absolute',
-                                    right: '1rem'
+                                    right: '1rem',
+                                    "hover":{
+                                        backgroundColor: appConfig.theme.colors.primary['050'],
+                                        color: 'black'
+                                    }
                                 }}
 
                             >
