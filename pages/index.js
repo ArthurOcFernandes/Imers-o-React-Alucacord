@@ -110,6 +110,7 @@ export default function PaginaInicial() {
               }}    
             /> */}
             <TextField
+              required
               value={username}
               onChange={(evento) => {
                 const valor = evento.target.value;
@@ -126,6 +127,8 @@ export default function PaginaInicial() {
                   backgroundColor: appConfig.theme.colors.neutrals[800],
                 },
               }}
+            
+
             />
             <Button
               type='submit'

@@ -80,6 +80,7 @@ export default function ChatPage() {
                         display: 'flex',
                         flex: 1,
                         height: '80%',
+                        backgroundColor: appConfig.theme.colors.neutrals['030'],
                         flexDirection: 'column',
                         borderRadius: '5px',
                         padding: '16px',
