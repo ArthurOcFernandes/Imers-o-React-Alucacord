@@ -56,6 +56,7 @@ export default function PaginaInicial() {
   }, [username])
 
   const roteamento = useRouter();
+  
   return (
     <>
       <Box
@@ -112,6 +113,7 @@ export default function PaginaInicial() {
               value={username}
               onChange={(evento) => {
                 const valor = evento.target.value;
+                console.log(valor);
                 setUsername(valor);
               }
               }
@@ -161,8 +163,6 @@ export default function PaginaInicial() {
                 borderRadius: '50%',
                 marginBottom: '16px',
               }}
-
-
               src={username.length >= 2 ? `https://github.com/${username}.png` : `https://github.githubassets.com/images/modules/logos_page/Octocat.png`}
             />
             <Text
