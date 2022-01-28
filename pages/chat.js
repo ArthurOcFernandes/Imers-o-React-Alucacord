@@ -3,18 +3,27 @@ import React from 'react';
 import appConfig from '../config.json';
 import { createClient } from '@supabase/supabase-js'
 import { useRouter } from 'next/router';
+import { ButtonSendSticker } from '../src/components/ButtonSendSticker'
 
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzI5ODg0OSwiZXhwIjoxOTU4ODc0ODQ5fQ.0iX6o7hXQAC7OE2XtUxR8wMPlK1rS0Iq8xE-fp10HMc"
 const SUPABASE_URL = 'https://zmbkpbwqpxjwtzylcwxj.supabase.co';
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+const escutaMensagensEmTempoReal = (adicionaMensagem) => {
+    return supabaseClient.from('mensagens')
+        .on('INSERT', (respostaLive) => {
+            adicionaMensagem(respostaLive.new);
+        }).subscribe();
+}
+
 export default function ChatPage() {
-    
+
     const router = useRouter();
-    const {username} = router.query;
+    const { username } = router.query;
     console.log(username);
     const [mensagem, setMensagem] = React.useState("");
     const [listaMensagens, setListaMensagens] = React.useState([]);
+
     React.useEffect(() => {
         supabaseClient
             .from('mensagens')
@@ -24,7 +33,14 @@ export default function ChatPage() {
                 console.log('Dados consulta:', data);
                 setListaMensagens(data);
             });
-
+        escutaMensagensEmTempoReal((novaMensagem) => {
+            setListaMensagens((valorAtualDaLista) => {
+                return [
+                    novaMensagem,
+                    ...valorAtualDaLista,
+                ]
+            });
+        });
     }, [])
 
     const handleNovaMensagem = (novaMensagem) => {
@@ -37,12 +53,8 @@ export default function ChatPage() {
             .from('mensagens')
             .insert([
                 mensagem
-            ]).then(({ data }) => {
-                setListaMensagens([
-                    data[0],
-                    ...listaMensagens,
-                ]);
-            });
+            ])
+            .then();
 
         setMensagem("");
     }
@@ -80,7 +92,6 @@ export default function ChatPage() {
                         display: 'flex',
                         flex: 1,
                         height: '80%',
-                        backgroundColor: appConfig.theme.colors.neutrals['030'],
                         flexDirection: 'column',
                         borderRadius: '5px',
                         padding: '16px',
@@ -102,6 +113,9 @@ export default function ChatPage() {
                             alignItems: 'flex-start',
                         }}
                     >
+                        <ButtonSendSticker onStickerClick={((sticker) => {
+                            handleNovaMensagem(`:sticker: ${sticker}`);
+                        })} />
                         <TextField
                             value={mensagem}
                             onChange={(evento) => {
@@ -142,15 +156,16 @@ export default function ChatPage() {
                                 backgroundColor: appConfig.theme.colors.neutrals['025'],
                                 width: '10%',
                                 height: '90%',
-                                "hover":{
-                                    backgroundColor:appConfig.theme.colors.primary['500']
+                                "hover": {
+                                    backgroundColor: appConfig.theme.colors.primary['500']
                                 }
-                                
+
                             }}
-                            
+
                         >
 
                         </Button>
+                        
                     </Box>
                 </Box>
             </Box>
@@ -207,7 +222,7 @@ function MessageList(props) {
                 marginBottom: '16px',
             }}
         >
-            
+
             {props.mensagens.map((mensagem) => {
                 return (
                     <Text
@@ -274,7 +289,7 @@ function MessageList(props) {
                                 styleSheet={{
                                     position: 'absolute',
                                     right: '1rem',
-                                    "hover":{
+                                    "hover": {
                                         backgroundColor: appConfig.theme.colors.primary['050'],
                                         color: 'black'
                                     }
@@ -284,7 +299,12 @@ function MessageList(props) {
 
                             </Button>
                         </Box>
-                        {mensagem.texto}
+                        {(mensagem.texto.startsWith(':sticker:')) ?
+                            (<Image styleSheet={{
+                                maxWidth: '12rem',
+                            }} src={mensagem.texto.replace(':sticker:', "")} />)
+                            : (mensagem.texto)}
+
                     </Text>
                 );
             })}

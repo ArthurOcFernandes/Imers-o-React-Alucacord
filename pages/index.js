@@ -2,6 +2,7 @@ import appConfig from '../config.json';
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { Box, Button, Text, TextField, Image } from '@skynexui/components';
+import Head from 'next/head';
 
 
 
@@ -59,6 +60,9 @@ export default function PaginaInicial() {
   
   return (
     <>
+      <Head>
+          <title>Soulscord - Home</title>
+      </Head>
       <Box
         styleSheet={{
           display: 'flex', alignItems: 'center', justifyContent: 'center',
