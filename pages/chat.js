@@ -4,6 +4,7 @@ import appConfig from '../config.json';
 import { createClient } from '@supabase/supabase-js'
 import { useRouter } from 'next/router';
 import { ButtonSendSticker } from '../src/components/ButtonSendSticker'
+import Head from 'next/head';
 
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzI5ODg0OSwiZXhwIjoxOTU4ODc0ODQ5fQ.0iX6o7hXQAC7OE2XtUxR8wMPlK1rS0Iq8xE-fp10HMc"
 const SUPABASE_URL = 'https://zmbkpbwqpxjwtzylcwxj.supabase.co';
@@ -61,115 +62,120 @@ export default function ChatPage() {
 
     // ./Sua lógica vai aqui
     return (
-        <Box
-            styleSheet={{
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                backgroundColor: appConfig.theme.colors.primary[500],
-                backgroundImage: 'url(https://images7.alphacoders.com/493/thumb-1920-493639.jpg)',
-                backgroundRepeat: 'no-repeat', backgroundSize: 'cover', backgroundBlendMode: 'multiply',
-                color: appConfig.theme.colors.neutrals['000']
-            }}
-        >
+        <>
+            <Head>
+                <title>Soulscord - Chat</title>
+            </Head>
             <Box
                 styleSheet={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    flex: 1,
-                    boxShadow: '0 2px 10px 0 rgb(0 0 0 / 20%)',
-                    borderRadius: '5px',
-                    backgroundColor: appConfig.theme.colors.neutrals['025'],
-                    height: '100%',
-                    maxWidth: '95%',
-                    maxHeight: '95vh',
-                    padding: '32px',
-                    border: '1px solid #FFFFFF70'
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    backgroundColor: appConfig.theme.colors.primary[500],
+                    backgroundImage: 'url(https://images7.alphacoders.com/493/thumb-1920-493639.jpg)',
+                    backgroundRepeat: 'no-repeat', backgroundSize: 'cover', backgroundBlendMode: 'multiply',
+                    color: appConfig.theme.colors.neutrals['000']
                 }}
             >
-                <Header />
                 <Box
                     styleSheet={{
-                        position: 'relative',
                         display: 'flex',
-                        flex: 1,
-                        height: '80%',
                         flexDirection: 'column',
+                        flex: 1,
+                        boxShadow: '0 2px 10px 0 rgb(0 0 0 / 20%)',
                         borderRadius: '5px',
-                        padding: '16px',
+                        backgroundColor: appConfig.theme.colors.neutrals['025'],
+                        height: '100%',
+                        maxWidth: '95%',
+                        maxHeight: '95vh',
+                        padding: '32px',
+                        border: '1px solid #FFFFFF70'
                     }}
                 >
+                    <Header />
+                    <Box
+                        styleSheet={{
+                            position: 'relative',
+                            display: 'flex',
+                            flex: 1,
+                            height: '80%',
+                            flexDirection: 'column',
+                            borderRadius: '5px',
+                            padding: '16px',
+                        }}
+                    >
 
-                    <MessageList mensagens={listaMensagens} set={setListaMensagens} />
-                    {/* {listaMensagens.map((mensagemAtual) =>{
+                        <MessageList mensagens={listaMensagens} set={setListaMensagens} />
+                        {/* {listaMensagens.map((mensagemAtual) =>{
                         return (
                             <li key={mensagemAtual.id}>
                                 {mensagemAtual.de}:{mensagemAtual.texto}
                             </li>
                         )
                     })} */}
-                    <Box
-                        as="form"
-                        styleSheet={{
-                            display: 'flex',
-                            alignItems: 'flex-start',
-                        }}
-                    >
-                        <ButtonSendSticker onStickerClick={((sticker) => {
-                            handleNovaMensagem(`:sticker: ${sticker}`);
-                        })} />
-                        <TextField
-                            value={mensagem}
-                            onChange={(evento) => {
-                                setMensagem(evento.target.value);
+                        <Box
+                            as="form"
+                            styleSheet={{
+                                display: 'flex',
+                                alignItems: 'flex-start',
                             }}
-                            onKeyPress={(evento) => {
-                                if (evento.key == "Enter") {
+                        >
+                            <ButtonSendSticker onStickerClick={((sticker) => {
+                                handleNovaMensagem(`:sticker: ${sticker}`);
+                            })} />
+                            <TextField
+                                value={mensagem}
+                                onChange={(evento) => {
+                                    setMensagem(evento.target.value);
+                                }}
+                                onKeyPress={(evento) => {
+                                    if (evento.key == "Enter") {
+                                        evento.preventDefault();
+                                        handleNovaMensagem(mensagem);
+                                    }
+                                }}
+                                placeholder="Insira sua mensagem aqui..."
+                                type="textarea"
+                                styleSheet={{
+                                    width: '90%',
+                                    height: '100%',
+                                    border: `2px solid ${appConfig.theme.colors.primary['500']}`,
+                                    resize: 'none',
+                                    borderRadius: '5px',
+                                    padding: '6px 8px',
+                                    backgroundColor: appConfig.theme.colors.neutrals['025'],
+                                    color: appConfig.theme.colors.neutrals['000'],
+                                }}
+                            />
+                            <Button
+                                type='submit'
+                                onClick={(evento) => {
                                     evento.preventDefault();
                                     handleNovaMensagem(mensagem);
-                                }
-                            }}
-                            placeholder="Insira sua mensagem aqui..."
-                            type="textarea"
-                            styleSheet={{
-                                width: '90%',
-                                height: '100%',
-                                border: `2px solid ${appConfig.theme.colors.primary['500']}`,
-                                resize: 'none',
-                                borderRadius: '5px',
-                                padding: '6px 8px',
-                                backgroundColor: appConfig.theme.colors.neutrals['025'],
-                                color: appConfig.theme.colors.neutrals['000'],
-                            }}
-                        />
-                        <Button
-                            type='submit'
-                            onClick={(evento) => {
-                                evento.preventDefault();
-                                handleNovaMensagem(mensagem);
-                            }}
+                                }}
 
-                            label='Ok'
-                            size='xl'
-                            variant='secondary'
-                            styleSheet={{
-                                border: `2px solid`,
-                                borderColor: appConfig.theme.colors.primary['500'],
-                                backgroundColor: appConfig.theme.colors.neutrals['025'],
-                                width: '10%',
-                                height: '90%',
-                                "hover": {
-                                    backgroundColor: appConfig.theme.colors.primary['500']
-                                }
+                                label='Ok'
+                                size='xl'
+                                variant='secondary'
+                                styleSheet={{
+                                    border: `2px solid`,
+                                    borderColor: appConfig.theme.colors.primary['500'],
+                                    backgroundColor: appConfig.theme.colors.neutrals['025'],
+                                    width: '10%',
+                                    height: '90%',
+                                    "hover": {
+                                        backgroundColor: appConfig.theme.colors.primary['500']
+                                    }
 
-                            }}
+                                }}
 
-                        >
+                            >
 
-                        </Button>
-                        
+                            </Button>
+
+                        </Box>
                     </Box>
                 </Box>
             </Box>
-        </Box>
+        </>
     )
 }
 

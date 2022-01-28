@@ -1,26 +1,22 @@
 import React from 'react';
 import { Box, Button, Text, Image } from '@skynexui/components';
 import appConfig from '../../config.json';
-import Head from 'next/head'
 
 export function ButtonSendSticker(props) {
   const [isOpen, setOpenState] = React.useState('');
 
   return (
     <>
-
-      <Head>
-          <title>Soulscord - Chat</title>
-      </Head>
       <Box
         styleSheet={{
           position: 'relative',
+          display: 'flex',
+          alignItems: 'center',
+          height: '100%'
         }}
       >
         <Button
           styleSheet={{
-            borderRadius: '50%',
-            padding: '0 3px 0 0',
             minWidth: '50px',
             minHeight: '50px',
             fontSize: '20px',
@@ -29,11 +25,6 @@ export function ButtonSendSticker(props) {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundColor: appConfig.theme.colors.neutrals[300],
-            filter: isOpen ? 'grayscale(0)' : 'grayscale(1)',
-            hover: {
-              filter: 'grayscale(0)',
-            }
           }}
           label="😋"
           onClick={() => setOpenState(!isOpen)}
